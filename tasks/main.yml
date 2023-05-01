@@ -1,12 +1,18 @@
 ---
 # tasks file for role_win_mssqldb
 
+- name: Create SQL directories
+  ansible.windows.win_file:
+    path: "{{ item }}"
+    state: directory
+  loop: '{{ db_dirs }}'
+
 - name: Create sql script file to create DBATools DB
-  win_template:
+  ansible.windows.win_template:
     src: 'DBCreate.sql.j2'
     dest: '{{ inst_dbcreate_file }}'
   tags: mssql_dbcreate
 
 - name: Create DBTools DB
-  win_command: "sqlcmd -U sa -P {{ db_sapwd }} -i {{ inst_dbcreate_file }}"
+  ansible.windows.win_command: "sqlcmd -U sa -P {{ db_sapwd }} -i {{ inst_dbcreate_file }}"
   tags: mssql_dbcreate
