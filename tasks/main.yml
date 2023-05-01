@@ -5,6 +5,8 @@
   win_template:
     src: 'DBCreate.sql.j2'
     dest: '{{ inst_dbcreate_file }}'
+  tags: mssql_dbcreate
 
 - name: Create DBTools DB
   win_command: "sqlcmd -U sa -P {{ db_sapwd }} -i {{ inst_dbcreate_file }}"
+  tags: mssql_dbcreate
