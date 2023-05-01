@@ -6,13 +6,17 @@
     path: "{{ item }}"
     state: directory
   loop: '{{ db_dirs }}'
+  tags: 
+    - mssql_dbcreate
 
 - name: Create sql script file to create DBATools DB
   ansible.windows.win_template:
     src: 'DBCreate.sql.j2'
     dest: '{{ inst_dbcreate_file }}'
-  tags: mssql_dbcreate
+  tags: 
+    - mssql_dbcreate
 
 - name: Create DBTools DB
   ansible.windows.win_command: "sqlcmd -U sa -P {{ db_sapwd }} -i {{ inst_dbcreate_file }}"
-  tags: mssql_dbcreate
+  tags: 
+    - mssql_dbcreate
