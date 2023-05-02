@@ -1,29 +1,41 @@
-role_win_mssqldb Name
+role_win_mssqldb 
 =========
 
-A brief description of the role_win_mssqldb role goes here.
+This role uses a template to build a file with the information needed to create a DB in MS SQL Server on Windows. The template file is placed on the server as DBCreate.sql and that file is used in the sqlcmd to install the DB.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role_win_mssqldb role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Template file - DBCreate.sql.j2
 
 Role Variables
 --------------
 
-A description of the settable variables for this role_win_mssqldb role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
-
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
 
 Example Playbook
 ----------------
+- name: Create SQL directories
+  ansible.windows.win_file:
+    path: "{{ item }}"
+    state: directory
+  loop: '{{ db_dirs }}'
+  tags: 
+    - mssql_dbcreate
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+- name: Create sql script file to create {{ var_db_name }} DB
+  ansible.windows.win_template:
+    src: 'DBCreate.sql.j2'
+    dest: '{{ inst_dbcreate_file }}'
+  tags: 
+    - mssql_dbcreate
 
-  # add example of the role_win_mssqldb role here
+- name: Create {{ var_db_name }} DB
+  ansible.windows.win_command: "sqlcmd -U sa -P {{ db_sapwd }} -i {{ inst_dbcreate_file }}"
+  tags: 
+    - mssql_dbcreate
 
 License
 -------
@@ -33,4 +45,5 @@ GPL
 Author Information
 ------------------
 
-An optional section for the role_win_mssqldb role authors to include contact information, or a website (HTML is not allowed).
+Norman Owens
+Norman.Owens@redhat.com
